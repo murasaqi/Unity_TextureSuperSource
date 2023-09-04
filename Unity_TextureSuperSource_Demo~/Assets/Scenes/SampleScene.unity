@@ -1881,11 +1881,11 @@ RectTransform:
   m_Father: {fileID: 1727373706}
   m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2037737914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1934,9 +1934,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxSize: {x: 1920, y: 1080}
+  cropMode: 0
   rawImage: {fileID: 2037737914}
   inputMedia: {fileID: 0}
   mediaPosition: {x: 0, y: 0}
+  outputMedia: {fileID: 0}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

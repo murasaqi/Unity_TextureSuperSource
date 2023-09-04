@@ -1,16 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[Serializable]
+public enum CropMode
+{
+    Fit,
+    Fill,
+    Stretch,
+    Manual
+}
+
 [ExecuteAlways]
 public class MediaBox : MonoBehaviour
 {
     [SerializeField] private Vector2 boxSize;
+    [SerializeField] private CropMode cropMode;
     [SerializeField] private RawImage rawImage;
     [SerializeField] Texture inputMedia;
     [SerializeField] private Vector2 mediaPosition;
-    // [SerializeField] private Vector2 mediaScale;
+    [SerializeField] private RenderTexture outputMedia;
+    
     void Start()
     {
         
