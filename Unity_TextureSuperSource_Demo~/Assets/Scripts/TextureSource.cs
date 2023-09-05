@@ -53,15 +53,12 @@ namespace TextureSuperSource
 
         private void OnEnable()
         {
-            ResetMesh();
+            ResetSource();
+        }
 
-            _cloneMaterial = new Material(material);
-            _cloneMaterial.SetTexture("_MainTex", inputTexture);
-
-            _rectTransform = transformMode == TransformMode.RectTransform ? GetComponent<RectTransform>() : null;
-
-            _textureWidth = inputTexture.width;
-            _textureHeight = inputTexture.height;
+        private void OnValidate()
+        {
+            ResetSource();
         }
 
         public void RegisterSceneData(float sceneWidth, float sceneHeight)
@@ -70,39 +67,15 @@ namespace TextureSuperSource
             _sceneHeight = sceneHeight;
         }
 
-        public void AddRenderQueue(CommandBuffer commandBuffer)
+        private void Update()
         {
             _matrix = transform.localToWorldMatrix;
-            
-            if (transformMode == TransformMode.RectTransform)
-            {
-                var vertices = new Vector3[4];
-                _rectTransform.GetLocalCorners(vertices);
-                for(var i = 0; i < vertices.Length; i++)
-                {
-                    vertices[i].z = 0;
-                }
-                SetVertices(vertices);
-            }
-            else
-            {
-                var sceneWidthHalf = _sceneWidth / 2;
-                var sceneHeightHalf = _sceneHeight / 2;
-                var vertices = new Vector3[4]
-                {
-                    new Vector3(-sceneWidthHalf, -sceneHeightHalf, 0),
-                    new Vector3(-sceneWidthHalf, sceneHeightHalf, 0),
-                    new Vector3(sceneWidthHalf, sceneHeightHalf, 0),
-                    new Vector3(sceneWidthHalf, -sceneHeightHalf, 0),
-                };
-                SetVertices(vertices);
-            }
-            
-            _mesh.RecalculateBounds();
-            
-            ApplyBoundingBoxTypeToVertices();
-            ApplyCrop();
 
+            ResetSource();
+        }
+
+        public void AddRenderQueue(CommandBuffer commandBuffer)
+        {
             commandBuffer.DrawMesh(_mesh, _matrix, _cloneMaterial);
         }
 
@@ -231,6 +204,62 @@ namespace TextureSuperSource
                 new Vector2(right, bottom),
                 new Vector2(right, top),
             });
+        }
+
+        private void ResetSource()
+        {
+            ResetMesh();
+
+            if (_cloneMaterial != null)
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    DestroyImmediate(_cloneMaterial);
+                    _cloneMaterial = null;
+                }
+#else
+                Destroy(_cloneMaterial);
+                _cloneMaterial = null;
+#endif
+            }
+            
+            _cloneMaterial = new Material(material);
+
+            _rectTransform = transformMode == TransformMode.RectTransform ? GetComponent<RectTransform>() : null;
+            
+            _cloneMaterial.SetTexture("_MainTex", inputTexture);
+            _textureWidth = inputTexture.width;
+            _textureHeight = inputTexture.height;
+            
+            if (transformMode == TransformMode.RectTransform)
+            {
+                var vertices = new Vector3[4];
+                _rectTransform.GetLocalCorners(vertices);
+                for(var i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i].z = 0;
+                }
+                SetVertices(vertices);
+            }
+            else
+            {
+                var sceneWidthHalf = _sceneWidth / 2;
+                var sceneHeightHalf = _sceneHeight / 2;
+                var vertices = new Vector3[4]
+                {
+                    new Vector3(-sceneWidthHalf, -sceneHeightHalf, 0),
+                    new Vector3(-sceneWidthHalf, sceneHeightHalf, 0),
+                    new Vector3(sceneWidthHalf, sceneHeightHalf, 0),
+                    new Vector3(sceneWidthHalf, -sceneHeightHalf, 0),
+                };
+                SetVertices(vertices);
+            }
+            
+            _mesh.RecalculateBounds();
+            
+            ApplyBoundingBoxTypeToVertices();
+            ApplyCrop();
         }
     }
 }

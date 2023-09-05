@@ -18,12 +18,6 @@ namespace TextureSuperSource
 
         private void OnEnable()
         {
-            _commandBuffer = new CommandBuffer();
-            _commandBuffer.name = name;
-            _commandBuffer.SetRenderTarget(output, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.DontCare);
-            _commandBuffer.SetViewMatrix(Matrix4x4.LookAt(new Vector3(0, 0, -5), new Vector3(0, 0, 1), Vector3.up));
-            _commandBuffer.SetProjectionMatrix(Matrix4x4.Ortho(-output.width / 2, output.width / 2, -output.height / 2, output.height / 2, 0.01f, 100));
-            
             RegisterDataToSources();
         }
 
@@ -34,20 +28,23 @@ namespace TextureSuperSource
 
         private void LateUpdate()
         {
+            _commandBuffer = new CommandBuffer();
+            _commandBuffer.name = name;
+            
+            _commandBuffer.SetRenderTarget(output, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.DontCare);
+            _commandBuffer.SetViewMatrix(Matrix4x4.LookAt(new Vector3(0, 0, -5), new Vector3(0, 0, 1), Vector3.up));
+            _commandBuffer.SetProjectionMatrix(Matrix4x4.Ortho(-output.width / 2, output.width / 2, -output.height / 2, output.height / 2, 0.01f, 100));
+            
             _commandBuffer.ClearRenderTarget(true, true, Color.black);
-
-            foreach (var mediaSource in sources)
+            
+            foreach (var textureSources in sources)
             {
-                mediaSource.AddRenderQueue(_commandBuffer);
+                textureSources.AddRenderQueue(_commandBuffer);
             }
 
             Graphics.ExecuteCommandBuffer(_commandBuffer);
-        }
-
-        private void OnDisable()
-        {
-            _commandBuffer?.Dispose();
-            _commandBuffer = null;
+            
+            _commandBuffer.Release();
         }
 
         private void RegisterDataToSources()
