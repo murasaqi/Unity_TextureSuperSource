@@ -39,7 +39,7 @@ namespace TextureSuperSource
         [SerializeField] private Crop crop;
 
         private Mesh _mesh;
-        private Matrix4x4 _matrix;
+        private Matrix4x4 _matrix = Matrix4x4.identity;
 
         private Material _cloneMaterial;
 
@@ -53,12 +53,12 @@ namespace TextureSuperSource
 
         private void OnEnable()
         {
-            ResetSource();
+            //ResetSource();
         }
 
         private void OnValidate()
         {
-            ResetSource();
+            //ResetSource();
         }
 
         public void RegisterSceneData(float sceneWidth, float sceneHeight)
@@ -69,20 +69,22 @@ namespace TextureSuperSource
 
         private void Update()
         {
-            _matrix = transform.localToWorldMatrix;
-
-            ResetSource();
+            //ResetSource();
         }
 
         public void AddRenderQueue(CommandBuffer commandBuffer)
         {
+            _mesh = new Mesh();
+            _cloneMaterial = new Material(material);
+            _matrix = transform.localToWorldMatrix;
+
+            ResetSource();
+            
             commandBuffer.DrawMesh(_mesh, _matrix, _cloneMaterial);
         }
 
         private void ResetMesh()
         {
-            _mesh = new Mesh();
-            
             var sceneWidthHalf = _sceneWidth / 2;
             var sceneHeightHalf = _sceneHeight / 2;
             _mesh.SetVertices(new Vector3[]
@@ -210,7 +212,7 @@ namespace TextureSuperSource
         {
             ResetMesh();
 
-            if (_cloneMaterial != null)
+            /*if (_cloneMaterial != null)
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
@@ -222,10 +224,8 @@ namespace TextureSuperSource
                 Destroy(_cloneMaterial);
                 _cloneMaterial = null;
 #endif
-            }
+            }*/
             
-            _cloneMaterial = new Material(material);
-
             _rectTransform = transformMode == TransformMode.RectTransform ? GetComponent<RectTransform>() : null;
             
             _cloneMaterial.SetTexture("_MainTex", inputTexture);
@@ -258,8 +258,8 @@ namespace TextureSuperSource
             
             _mesh.RecalculateBounds();
             
-            ApplyBoundingBoxTypeToVertices();
-            ApplyCrop();
+            //ApplyBoundingBoxTypeToVertices();
+            //ApplyCrop();
         }
     }
 }
