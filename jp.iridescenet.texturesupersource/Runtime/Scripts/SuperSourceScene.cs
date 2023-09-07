@@ -9,6 +9,7 @@ namespace TextureSuperSource
     [ExecuteAlways]
     public class SuperSourceScene : MonoBehaviour
     {
+        [SerializeField] private Camera sceneCamera;
         [SerializeField] private string sceneName = "SuperSourceScene";
         [SerializeField] private RenderTexture output;
 
@@ -16,18 +17,55 @@ namespace TextureSuperSource
 
         private CommandBuffer _commandBuffer;
 
+        private bool _Initialized;
+
         private void OnEnable()
         {
-            RegisterDataToSources();
+            Initialize();
+        }
+
+        private void OnDisable()
+        {
+            _commandBuffer?.Release();
         }
 
         private void OnValidate()
         {
-            RegisterDataToSources();
+            Initialize();
         }
 
         private void LateUpdate()
         {
+            if (Time.frameCount > 10 && !_Initialized)
+            {
+                _Initialized = true;
+
+                Initialize();
+            }
+
+            if (!Application.isPlaying)
+            {
+                Initialize();
+            }
+
+            //sceneCamera.AddCommandBuffer(CameraEvent.AfterEverything, _commandBuffer);
+            Graphics.ExecuteCommandBuffer(_commandBuffer);
+        }
+
+        private void RegisterDataToSources()
+        {
+            foreach (var source in sources)
+            {
+                source.RegisterSceneData(output.width, output.height);
+            }
+        }
+
+        private void Initialize()
+        {
+            _commandBuffer?.Release();
+            
+            RegisterDataToSources();
+            
             _commandBuffer = new CommandBuffer();
             _commandBuffer.name = name;
             
@@ -40,18 +78,6 @@ namespace TextureSuperSource
             foreach (var textureSources in sources)
             {
                 textureSources.AddRenderQueue(_commandBuffer);
-            }
-
-            Graphics.ExecuteCommandBuffer(_commandBuffer);
-            
-            _commandBuffer.Release();
-        }
-
-        private void RegisterDataToSources()
-        {
-            foreach (var source in sources)
-            {
-                source.RegisterSceneData(output.width, output.height);
             }
         }
     }
