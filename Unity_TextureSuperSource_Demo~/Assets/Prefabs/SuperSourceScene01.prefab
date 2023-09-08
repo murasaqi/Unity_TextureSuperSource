@@ -194,9 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d38fdb96b29a47b3946564bf62a30930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneCamera: {fileID: 4937179990209017389}
-  sceneName: SuperSourceScene01
-  output: {fileID: 8400000, guid: 9acdc4b245f1e3b44b2f6b4e6aaec21f, type: 2}
+  output: {fileID: 8400000, guid: d5f7a0d1992d4d448a3062ff29c6752c, type: 2}
   sources:
   - {fileID: 7837236249702027980}
   - {fileID: 4959302434114172991}
@@ -272,10 +270,10 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 1
   m_VolumeLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 64
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
