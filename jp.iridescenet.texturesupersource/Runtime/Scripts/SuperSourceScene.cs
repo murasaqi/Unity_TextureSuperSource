@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
 namespace TextureSuperSource
@@ -9,8 +12,6 @@ namespace TextureSuperSource
     [ExecuteAlways]
     public class SuperSourceScene : MonoBehaviour
     {
-        [SerializeField] private Camera sceneCamera;
-        [SerializeField] private string sceneName = "SuperSourceScene";
         [SerializeField] private RenderTexture output;
 
         [SerializeField] private List<TextureSource> sources;
@@ -47,8 +48,7 @@ namespace TextureSuperSource
             {
                 Initialize();
             }
-
-            //sceneCamera.AddCommandBuffer(CameraEvent.AfterEverything, _commandBuffer);
+            
             Graphics.ExecuteCommandBuffer(_commandBuffer);
         }
 
@@ -62,8 +62,6 @@ namespace TextureSuperSource
 
         private void Initialize()
         {
-            _commandBuffer?.Release();
-            
             RegisterDataToSources();
             
             _commandBuffer = new CommandBuffer();
@@ -80,5 +78,73 @@ namespace TextureSuperSource
                 textureSources.AddRenderQueue(_commandBuffer);
             }
         }
+        
+        /*
+        [ContextMenu("Add Postprocess Feature")]
+        private void AddPostprocessFeature()
+        { 
+            var camera = gameObject.AddComponent<Camera>();
+            var rt = new RenderTexture(output);
+            camera.targetTexture = rt;
+            
+            var rtPath = EditorUtility.SaveFilePanelInProject("Save RenderTexture", $"{name}", "renderTexture", "", "Assets");
+            if (string.IsNullOrEmpty(rtPath))
+            {
+                return;
+            }
+            
+            AssetDatabase.CreateAsset(rt, rtPath);
+            AssetDatabase.Refresh();
+
+            var urd = ScriptableObject.CreateInstance<UniversalRendererData>();
+            var rtvrf = ScriptableObject.CreateInstance<RenderTextureVolumeRenderFeature>();
+            rtvrf.SetRenderTexture(rt);
+            rtvrf.name = $"{name}_RenderTextureVolumeRenderFeature";
+            urd.rendererFeatures.Add(rtvrf);
+            
+            var rendererDataPath = EditorUtility.SaveFilePanelInProject("Save Universal Renderer Data", $"{name}", "asset", "", "Assets");
+            if (string.IsNullOrEmpty(rendererDataPath))
+            {
+                return;
+            }
+            
+            AssetDatabase.CreateAsset(urd, rendererDataPath);
+            AssetDatabase.Refresh();
+
+            var urppa = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            if (urppa == null)
+            {
+                Debug.Log("Not Found UniversalRenderPipelineAsset");
+                return;
+            }
+            
+            var field = urppa.GetType().GetField("m_Renderers", BindingFlags.NonPublic|BindingFlags.Instance);;
+            if (field == null)
+            {
+                Debug.Log("Not Found Field");
+                return;
+            }
+
+            if (field.GetValue(urppa) is not ScriptableRenderer[] renderers)
+            {
+                Debug.Log("Not Found Renderers");
+                return;
+            }
+                
+            var newRendererIndex = renderers.Length;
+            var newRenderers = new ScriptableRenderer[renderers.Length + 1];
+            Array.Copy(renderers, newRenderers, renderers.Length);
+            var newRenderer = new UniversalRenderer(urd);
+            newRenderers[newRendererIndex] = newRenderer;
+            field.SetValue(urppa, newRenderers);
+
+            var additionalData = camera.GetUniversalAdditionalCameraData();
+            additionalData.SetRenderer(newRendererIndex);
+            additionalData.renderPostProcessing = true;
+            
+            Debug.Log("Add Postprocess Feature Complete");
+        }
+        */
+        
     }
 }

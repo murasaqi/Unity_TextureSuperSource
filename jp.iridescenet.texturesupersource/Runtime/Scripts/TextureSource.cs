@@ -51,25 +51,10 @@ namespace TextureSuperSource
         private float _textureWidth;
         private float _textureHeight;
 
-        private void OnEnable()
-        {
-            //ResetSource();
-        }
-
-        private void OnValidate()
-        {
-            //ResetSource();
-        }
-
         public void RegisterSceneData(float sceneWidth, float sceneHeight)
         {
             _sceneWidth = sceneWidth;
             _sceneHeight = sceneHeight;
-        }
-
-        private void Update()
-        {
-            //ResetSource();
         }
 
         public void AddRenderQueue(CommandBuffer commandBuffer)
@@ -212,20 +197,6 @@ namespace TextureSuperSource
         {
             ResetMesh();
 
-            /*if (_cloneMaterial != null)
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    DestroyImmediate(_cloneMaterial);
-                    _cloneMaterial = null;
-                }
-#else
-                Destroy(_cloneMaterial);
-                _cloneMaterial = null;
-#endif
-            }*/
-            
             _rectTransform = transformMode == TransformMode.RectTransform ? GetComponent<RectTransform>() : null;
             
             _cloneMaterial.SetTexture("_MainTex", inputTexture);
@@ -258,8 +229,8 @@ namespace TextureSuperSource
             
             _mesh.RecalculateBounds();
             
-            //ApplyBoundingBoxTypeToVertices();
-            //ApplyCrop();
+            ApplyBoundingBoxTypeToVertices();
+            ApplyCrop();
         }
     }
 }
